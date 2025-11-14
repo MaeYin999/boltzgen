@@ -46,7 +46,7 @@ conda activate bg
 
 ### 4 - Install BoltzGen from source 从源代码安装BoltzGen
 
-### 下载BoltzGen仓库，进入boltzgen目录，并从源代码安装BoltzGen
+#### 下载BoltzGen仓库，进入boltzgen目录，并从源代码安装BoltzGen
 
 Download the BoltzGen repository, change directory into the boltzgen directory, and install BoltzGen from source:
 
@@ -75,7 +75,7 @@ docker run --rm --gpus all -v "$(realpath workdir)":/workdir -v "$(realpath cach
   --num_designs 2
 ```
 
-### 在上述示例中，首次运行镜像时会下载模型权重。若要在构建时将权重固化到镜像中，请执行：
+#### 在上述示例中，首次运行镜像时会下载模型权重。若要在构建时将权重固化到镜像中，请执行：
 
 In the example above, the model weights are downloaded the first time the image is run. To bake the weights into the image at build time, run:
 
@@ -92,11 +92,11 @@ docker build -t boltzgen:weights --build-arg DOWNLOAD_WEIGHTS=true .
 
 `boltzgen run` takes a [design specification](#how-to-make-a-design-specification-yaml) `.yaml` and produces a set of ranked designs.\
 
-### 它会将模型（约6GB）下载到 ~/.cache 目录。您可以通过传递 --cache 您的路径 或设置 $HF_HOME 环境变量来修改此路径。
+#### 它会将模型（约6GB）下载到 ~/.cache 目录。您可以通过传递 --cache 您的路径 或设置 $HF_HOME 环境变量来修改此路径。
 
 ⚠️ it downloads models (~6GB) to `~/.cache`. This can by changed by passing `--cache YOUR_PATH` or by setting `$HF_HOME`.\
 
-### 若运行中途中断，可使用 --reuse 参数重新启动，进度不会丢失。
+#### 若运行中途中断，可使用 --reuse 参数重新启动，进度不会丢失。
 
 ⚠️ If your run is ever interrupted, you can restart it with `--reuse`. No progress is lost.
 
@@ -118,33 +118,21 @@ boltzgen run example/vanilla_protein/1g13prot.yaml \
 ```
 All command line args are explained in ["All Command Line Arguments"](#all-command-line-arguments).\
 
-### 制作设计的分步指南
+#### 制作设计的分步指南
 **Step-by-step guide for making your designs:**
 
-### 创建您的 .yaml 文件，用于指定设计目标和设计要求。我们在 example 目录中提供了多个示例（例如 example/vanilla_peptide_with_target_binding_site/beetletert.yaml）。具体细节请参阅“如何编写设计规范 .yaml 文件”。
+#### 创建您的 .yaml 文件，用于指定设计目标和设计要求。我们在 example 目录中提供了多个示例（例如 example/vanilla_peptide_with_target_binding_site/beetletert.yaml）。具体细节请参阅“如何编写设计规范 .yaml 文件”。
 1. Make your `.yaml` file that specifies your target and what you want to design. We provide many examples in
    `example` such as `example/vanilla_peptide_with_target_binding_site/beetletert.yaml`. Details in
    ["How to make a design specification .yaml"](#how-to-make-a-design-specification-yaml).
 
-### 检查您的设计规范是否符合预期：
-2. Check whether your design specification is as intended.
-   
-   ### 运行 boltzgen check example/vanilla_peptide_with_target_binding_site/beetletert.yaml
+#### 检查您的设计规范是否符合预期：
+2. Check whether your design specification is as intended.   
    1. Run `boltzgen check example/vanilla_peptide_with_target_binding_site/beetletert.yaml`.
-   
-   ### 在蛋白质结构查看器（例如 PyMOL、Chimera，或在线工具：https://molstar.org/viewer/）中可视化生成的 mmcif 文件    
    2. Visualize the resulting mmcif file in a protein structure viewer (e.g. PyMOL, Chimera, or online: https://molstar.org/viewer/).
-
-   ### 您的查看器中应显示结合位点与靶标其他区域颜色不同
    3. Your viewer should show the binding site in a different color than the rest of the target.
-
-### 参照上述方式，对您的 .yaml 文件运行 boltzgen run ... 命令
 4. Run the `boltzgen run ...` command as above on your `.yaml` file. 
-
-### 经过筛选和排序的设计结果将保存在 --output 指定的输出目录中 <img src="assets/fig_seconds_per_design.png" alt="单次设计耗时" align="right" width="35%">
 5. Your filtered, ranked set of designs will be in `--output`. <img src="assets/fig_seconds_per_design.png" alt="Seconds per design" align="right" width="35%">
-
-### 您很可能需要以不同设置重新运行筛选步骤（约需15秒）。可使用 boltzgen run --steps filtering --output ... 命令，或使用通常更方便的 Jupyter notebook 文件 filter.ipynb。详细说明请参阅“重新运行筛选步骤（推荐）”。
 6. You likely want to rerun the filtering step with different settings (takes ~15 sec). Use
    `boltzgen run --steps filtering --output ...` or the Jupyter notebook `filter.ipynb` which is often more convenient.
    Detailed explanation in ["Rerunning the Filtering"](#rerunning-the-filtering-recommended).
@@ -192,6 +180,8 @@ All configuration parameters can be overridden using the `--config` option; see 
 # How to make a design specification .yaml
 A more detailed explanation of how our <code>.yaml</code> design specification files work is in <a href="example/README.md" target="_blank">example/README.md</a>. Below is an example based explanation, which is sufficient for most tasks.
 
+#### ⚠️ 所有残基索引均从1开始计数，且我们采用标准mmCIF残基索引标签（label_asym_id），而非作者提供的残基索引（auth_asym_id）！您可通过在 https://molstar.org/viewer/ 中打开mmCIF文件，将鼠标悬停在残基上并查看右下角显示的索引来验证文件中的索引编号。如下图所示，我们使用的索引是41，而auth id 22是错误的：
+
 **IMPORTANT:** ⚠️ All residue indices are specified **starting at 1** and we use the canonical mmcif residue index `label_asym_id`, and **not** the `auth_asym_id` author residue index! 
 You can check the indexing in your mmcif file by opening it in https://molstar.org/viewer/, hovering over a residue, and checking the index on the bottom right. You will see something like this where **41 is the index we use, the auth id 22 is incorrect**:
 
@@ -236,7 +226,7 @@ entities:
 **IMPORTANT:** ⚠️ File references inside a yaml file (e.g. to cif files) are interpreted relative to the directory of the yaml file.
 
 
-Example highlighting many (not all) functionalities:
+Example highlighting many (not all) functionalities: 示例展示多项（非全部）功能：
 ```yaml
 entities:
   # Specification of the target which is extracted from a .cif file
@@ -340,7 +330,100 @@ constraints:
       atom2: [S, 18, SG]
 
 ```
+```yaml
+entities:
+  # 从.cif文件中提取目标结构的规范说明
+  - file:
+      path: 8r3a.cif # 也支持.pdb文件
+      
+      # 指定.cif文件中用作目标的链和残基范围（未指定时默认使用全部链）
+      include: 
+        - chain:
+            id: A
+            res_index: 2..50,55.. # 包含2至50号残基及55号以后的所有残基
+        - chain:
+            id: B
 
+      # 定义设计区域应与/不应结合的目标区域（可留空，默认任意位置均可结合）
+      binding_types:
+        - chain:
+            id: A
+            binding: 5..7,13  # 应结合区域
+        - chain:
+            id: B
+            not_binding: "all" # 禁止结合整个B链
+      
+      # 定义目标结构中需明确构象的区域
+      # 默认可见性为1（结构已明确），可见性为0则结构未定义
+      structure_groups:
+        - group:
+            visibility: 1
+            id: A
+            res_index: 10..13
+        - group:
+            # 结构组2与结构组1的相对空间位置未定义
+            visibility: 2 
+            id: B
+        # 覆盖之前的可见性设置，将A链13号残基设为0
+        - group:
+            visibility: 0
+            id: A
+            res_index: 13 
+
+      # （可选）指定.cif文件中需要重新设计的残基
+      design:
+        - chain:
+            id: A
+            res_index: 14..19
+
+      # 为设计区域指定二级结构要求
+      secondary_structure:
+        - chain:
+            id: A
+            loop: 14      # 14号残基为无规卷曲
+            helix: 15..17 # 15-17号残基为α螺旋
+            sheet: 19     # 19号残基为β折叠
+
+  # 定义非设计型蛋白质链（序列固定）
+  - protein: 
+      id: X
+      sequence: AAVTTTTPPP
+
+  # 定义设计型蛋白质链（数字代表可变长度）
+  - protein: 
+      id: G
+      sequence: 15..20AAAAAAVTTTT18PPP # 包含15-20个随机残基+固定序列"AAAAAAVTTTT"+18个随机残基+固定序列"PPP"
+
+  # 带WHL交联剂的螺旋肽设计（参见下方连接肽与配体的约束条件）
+  - protein: 
+      id: R
+      sequence: 3..5C6C3 # 3-5个随机残基+半胱氨酸+6个随机残基+半胱氨酸+3个随机残基
+  - ligand:
+      id: Q
+      ccd: WHL  # 使用WHL配体
+  
+  # 含17个残基的设计肽链
+  - protein:
+      id: H
+      sequence: 17  # 17个完全随机设计的残基
+
+  # 含双半胱氨酸和二硫键的设计肽规范（参见约束条件）
+  - protein:
+      id: S
+      sequence: 10..14C6C3 # 10-14个随机残基+半胱氨酸+6个随机残基+半胱氨酸+3个随机残基
+
+constraints:
+    # 按最小可能残基数采样时的连接规范
+  - bond:
+      atom1: [R, 4, SG] # WHL稳定化螺旋肽：连接小分子与设计肽链的原子
+      atom2: [Q, 1, CK]
+  - bond:
+      atom1: [R, 11, SG] # WHL稳定化螺旋肽：另一连接点
+      atom2: [Q, 1, CH]
+  - bond:
+      atom1: [S, 11, SG] # 设计肽链内二硫键：连接两个半胱氨酸
+      atom2: [S, 18, SG]
+```
 
 # Running only specific pipeline steps
 
@@ -450,7 +533,7 @@ The `boltzgen run` command executes the BoltzGen binder design pipeline. Here ar
 - `--cache CACHE` - Directory where downloaded models will be stored. Default: `~/.cache`
 
 ## `boltzgen download`
-
+boltzgen下载命令下载boltzgen所需的模型权重和数据工件。在大多数情况下，您不需要使用boltogen下载，因为boltogen run会自动下载所需的内容。
 The `boltzgen download` command downloads model weights and data artifacts needed for BoltzGen. In most cases you don't need to use `boltzgen download`, since `boltzgen run` will download what is needed automatically.
 
 Downloaded weights and datasets are stored in `~/.cache` by default but this can be changed by specifying `--cache`.
