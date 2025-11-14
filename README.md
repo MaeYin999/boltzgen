@@ -8,7 +8,7 @@
  ![alt text](assets/cover.png)
 </div>
 
-# Installation
+# Installation 安装
 In an environment with python >=3.11:
 ```bash
 pip install boltzgen
@@ -19,7 +19,7 @@ pip install boltzgen
     Click for detailed installation instructions
   </summary>
 
-### 1 - Install Miniconda
+### 1 - Install Miniconda 安装Miniconda
 
 Choose the installer for your operating system, download it, and follow the on-screen prompts:
 
@@ -28,7 +28,7 @@ Choose the installer for your operating system, download it, and follow the on-s
 
 After installation, **open a terminal / command prompt** (you may need to search for “Anaconda Prompt” on Windows).
 
-### 2 - Create a Miniconda Python environment
+### 2 - Create a Miniconda Python environment 创建一个Miniconda python环境
 
 Run the command below in a terminal to create a fresh environment called `bg` with Python 3.12:
 
@@ -36,7 +36,7 @@ Run the command below in a terminal to create a fresh environment called `bg` wi
 conda create -n bg python=3.12
 ```
 
-### 3 - Activate the environment (do this every time you work with BoltzGen)
+### 3 - Activate the environment (do this every time you work with BoltzGen) 在每一次运行BoltzGen时激活BoltzGen环境
 
 ```bash
 conda activate bg
@@ -44,7 +44,9 @@ conda activate bg
 
 > If you open a **new** terminal session later, you must run `conda activate bg` again before using BoltzGen.
 
-### 4 - Install BoltzGen from source
+### 4 - Install BoltzGen from source 从源代码安装BoltzGen
+
+### 下载BoltzGen仓库，进入boltzgen目录，并从源代码安装BoltzGen
 
 Download the BoltzGen repository, change directory into the boltzgen directory, and install BoltzGen from source:
 
@@ -73,6 +75,8 @@ docker run --rm --gpus all -v "$(realpath workdir)":/workdir -v "$(realpath cach
   --num_designs 2
 ```
 
+### 在上述示例中，首次运行镜像时会下载模型权重。若要在构建时将权重固化到镜像中，请执行：
+
 In the example above, the model weights are downloaded the first time the image is run. To bake the weights into the image at build time, run:
 
 ```bash
@@ -87,7 +91,13 @@ docker build -t boltzgen:weights --build-arg DOWNLOAD_WEIGHTS=true .
 
 
 `boltzgen run` takes a [design specification](#how-to-make-a-design-specification-yaml) `.yaml` and produces a set of ranked designs.\
+
+### 它会将模型（约6GB）下载到 ~/.cache 目录。您可以通过传递 --cache 您的路径 或设置 $HF_HOME 环境变量来修改此路径。
+
 ⚠️ it downloads models (~6GB) to `~/.cache`. This can by changed by passing `--cache YOUR_PATH` or by setting `$HF_HOME`.\
+
+### 若运行中途中断，可使用 --reuse 参数重新启动，进度不会丢失。
+
 ⚠️ If your run is ever interrupted, you can restart it with `--reuse`. No progress is lost.
 
 
@@ -97,28 +107,56 @@ boltzgen run example/vanilla_protein/1g13prot.yaml \
   --protocol protein-anything \
   --num_designs 10 \
   --budget 2
+
+### --num_designs 参数用于设定中间设计的生成数量。实际应用中，建议设置介于 10,000 至 60,000 之间；
+
 # --num_designs is the number of intermediate designs. In practice you will want between 10,000 - 60,000
+
+### --budget 参数则用于确定最终经多样性优化后的设计集中应保留的设计数量。
+
 # --budget is how many designs should be in the final diversity optimized set
 ```
 All command line args are explained in ["All Command Line Arguments"](#all-command-line-arguments).\
+
+### 制作设计的分步指南
 **Step-by-step guide for making your designs:**
+
+### 创建您的 .yaml 文件，用于指定设计目标和设计要求。我们在 example 目录中提供了多个示例（例如 example/vanilla_peptide_with_target_binding_site/beetletert.yaml）。具体细节请参阅“如何编写设计规范 .yaml 文件”。
 1. Make your `.yaml` file that specifies your target and what you want to design. We provide many examples in
    `example` such as `example/vanilla_peptide_with_target_binding_site/beetletert.yaml`. Details in
    ["How to make a design specification .yaml"](#how-to-make-a-design-specification-yaml).
-2. Check whether your design specification is as intended.  
-   1. Run `boltzgen check example/vanilla_peptide_with_target_binding_site/beetletert.yaml`.  
+
+### 检查您的设计规范是否符合预期：
+2. Check whether your design specification is as intended.
+   
+   ### 运行 boltzgen check example/vanilla_peptide_with_target_binding_site/beetletert.yaml
+   1. Run `boltzgen check example/vanilla_peptide_with_target_binding_site/beetletert.yaml`.
+   
+   ### 在蛋白质结构查看器（例如 PyMOL、Chimera，或在线工具：https://molstar.org/viewer/）中可视化生成的 mmcif 文件    
    2. Visualize the resulting mmcif file in a protein structure viewer (e.g. PyMOL, Chimera, or online: https://molstar.org/viewer/).
+
+   ### 您的查看器中应显示结合位点与靶标其他区域颜色不同
    3. Your viewer should show the binding site in a different color than the rest of the target.
-3. Run the `boltzgen run ...` command as above on your `.yaml` file. 
-4. Your filtered, ranked set of designs will be in `--output`. <img src="assets/fig_seconds_per_design.png" alt="Seconds per design" align="right" width="35%">
-5. You likely want to rerun the filtering step with different settings (takes ~15 sec). Use
+
+### 参照上述方式，对您的 .yaml 文件运行 boltzgen run ... 命令
+4. Run the `boltzgen run ...` command as above on your `.yaml` file. 
+
+### 经过筛选和排序的设计结果将保存在 --output 指定的输出目录中 <img src="assets/fig_seconds_per_design.png" alt="单次设计耗时" align="right" width="35%">
+5. Your filtered, ranked set of designs will be in `--output`. <img src="assets/fig_seconds_per_design.png" alt="Seconds per design" align="right" width="35%">
+
+### 您很可能需要以不同设置重新运行筛选步骤（约需15秒）。可使用 boltzgen run --steps filtering --output ... 命令，或使用通常更方便的 Jupyter notebook 文件 filter.ipynb。详细说明请参阅“重新运行筛选步骤（推荐）”。
+6. You likely want to rerun the filtering step with different settings (takes ~15 sec). Use
    `boltzgen run --steps filtering --output ...` or the Jupyter notebook `filter.ipynb` which is often more convenient.
    Detailed explanation in ["Rerunning the Filtering"](#rerunning-the-filtering-recommended).
 
-**How many designs to generate?** \
+### 要生成多少个设计
+**How many designs to generate?** \ 
+
+### 越多越好。“最小值”取决于你的目标。 BoltzGen应该在GPU上运行。在右侧，您可以看到A100 GPU上单个设计的流程中每个步骤所需的时间。
 More is better. The "minimum" depends on your target.  
 BoltzGen should be run on a GPU. On the right you can see the time required for each step in the pipeline for a single design on an A100 GPU.
 
+### 我们建议首先运行`-num_design 50`，检查所有内容是否按预期运行，然后将`-num-design `增加到10000-60000之间
 We suggest first running with e.g. `--num_design 50`, checking that everything behaves as desired, and then increasing `--num_design` to between 10,000 - 60,000.
 
 ## Pipeline output
