@@ -137,14 +137,14 @@ All command line args are explained in ["All Command Line Arguments"](#all-comma
    `boltzgen run --steps filtering --output ...` or the Jupyter notebook `filter.ipynb` which is often more convenient.
    Detailed explanation in ["Rerunning the Filtering"](#rerunning-the-filtering-recommended).
 
-### 要生成多少个设计
-**How many designs to generate?** \ 
+#### 要生成多少个设计
+**How many designs to generate?** 
 
-### 越多越好。“最小值”取决于你的目标。 BoltzGen应该在GPU上运行。在右侧，您可以看到A100 GPU上单个设计的流程中每个步骤所需的时间。
+#### 越多越好。“最小值”取决于你的目标。 BoltzGen应该在GPU上运行。在右侧，您可以看到A100 GPU上单个设计的流程中每个步骤所需的时间。
 More is better. The "minimum" depends on your target.  
 BoltzGen should be run on a GPU. On the right you can see the time required for each step in the pipeline for a single design on an A100 GPU.
 
-### 我们建议首先运行`-num_design 50`，检查所有内容是否按预期运行，然后将`-num-design `增加到10000-60000之间
+#### 我们建议首先运行`-num_design 50`，检查所有内容是否按预期运行，然后将`-num-design `增加到10000-60000之间
 We suggest first running with e.g. `--num_design 50`, checking that everything behaves as desired, and then increasing `--num_design` to between 10,000 - 60,000.
 
 ## Pipeline output
@@ -534,6 +534,7 @@ The `boltzgen run` command executes the BoltzGen binder design pipeline. Here ar
 
 ## `boltzgen download`
 boltzgen下载命令下载boltzgen所需的模型权重和数据工件。在大多数情况下，您不需要使用boltogen下载，因为boltogen run会自动下载所需的内容。
+
 The `boltzgen download` command downloads model weights and data artifacts needed for BoltzGen. In most cases you don't need to use `boltzgen download`, since `boltzgen run` will download what is needed automatically.
 
 Downloaded weights and datasets are stored in `~/.cache` by default but this can be changed by specifying `--cache`.
